@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prescriptions - Synapse</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="doctor.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-logo">
+          <svg
+            class="w-8 h-8"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Clean Medical Cross -->
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="#dc2626"
+              class="text-red-600"
+            />
+            <path
+              d="M12 8v8M8 12h8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span> &nbsp;ग्रामीण-आरोग्य</span>
+        </div>
+
+        <div class="header-actions">
+          <span id="doctorName" class="text-gray-700 font-medium"></span>
+          <button onclick="logout()" class="flex items-center gap-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="../doctor.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="prescription.html" class="nav-link" id="prescriptions-link">
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a href="appointment.html" class="nav-link" id="appointments-link">
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <!-- Welcome Section -->
+          <div class="welcome-section mb-8">
+            <h1 class="text-3xl font-bold">Manage Prescriptions</h1>
+            <p class="mt-2 opacity-90">
+              Review and manage AI-generated prescriptions
+            </p>
+          </div>
+
+          <!-- Pending Reviews -->
+          <div class="card mb-8">
+            <div class="card-header">
+              <h2 class="card-title">Pending Reviews</h2>
+            </div>
+            <div id="pendingPrescriptionsList" class="space-y-4"></div>
+          </div>
+
+          <!-- Review History -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Review History</h2>
+            </div>
+            <div id="reviewHistoryList" class="space-y-4"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Review Modal -->
+      <div id="reviewModal" class="modal" style="display: none">
+        <div class="modal-content max-w-3xl">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Review Prescription</h3>
+            <button
+              onclick="closeReviewModal()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div id="prescriptionDetails" class="mb-6 space-y-4"></div>
+
+          <form id="reviewForm" class="space-y-4">
+            <input type="hidden" id="prescriptionId" />
+
+            <div>
+              <label class="block text-gray-700 mb-2"
+                >AI-Generated Prescription:</label
+              >
+              <div
+                id="aiDiagnosis"
+                class="p-4 bg-gray-50 border rounded-lg text-gray-700"
+              ></div>
+            </div>
+
+            <div>
+              <label class="block text-gray-700 mb-2"
+                >Prescribed Medications:</label
+              >
+              <div id="medicationsList" class="space-y-2"></div>
+              <button
+                type="button"
+                onclick="addMedication()"
+                class="mt-2 btn btn-primary"
+              >
+                Add Medication
+              </button>
+            </div>
+
+            <div>
+              <label class="block text-gray-700 mb-2">Doctor's Notes:</label>
+              <textarea
+                id="doctorNotes"
+                rows="4"
+                class="form-input"
+                placeholder="Add your notes here..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+              <button
+                type="button"
+                onclick="rejectPrescription()"
+                class="btn btn-danger"
+              >
+                Reject
+              </button>
+              <button type="submit" class="btn btn-primary">Approve</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="doctor.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+        if (currentPath.includes("doctor.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        } else if (currentPath.includes("appointment.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        }
+      });
+    </script>
+  </body>
+</html>

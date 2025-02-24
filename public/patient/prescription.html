@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prescriptions - Synapse</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur", // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="patient.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span> &nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="/patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/patient/pbookap.html"
+            class="nav-link"
+            id="appointments-link"
+          >
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="/patient/ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+          <a href="./scheme.html" id="view-schemes-link" class="nav-link">
+            <i class="fas fa-hand-holding-medical w-6"></i>
+            <span class="ml-2">Health Schemes</span>
+          </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link"
+          >
+            <i class="fas fa-heartbeat w-6"></i>
+            <span class="ml-2">Health Monitor</span>
+          </a>
+          <a
+            href="medical-records.html"
+            id="medical-records-link"
+            class="nav-link"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <div class="prescriptions-section">
+            <div
+              style="
+                background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+                border-radius: 0.5rem;
+                padding: 30px;
+                color: white;
+                margin-bottom: 2rem;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+              "
+            >
+              <h1 style="font-size: 1.875rem; font-weight: bold">
+                <span style="color: #eee7bc">Your Prescriptions</span>
+                <span id="welcomeName" style="color: #00e676"></span>
+              </h1>
+            </div>
+
+            <div id="prescriptionsList" class="prescriptions-container">
+              <!-- Prescriptions will be populated here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal with fixed positioning and improved styling -->
+    <div
+      id="prescriptionModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-11/12 max-w-lg mx-auto my-6 relative flex flex-col"
+        style="max-height: 80vh"
+      >
+        <div class="flex justify-between items-center border-b p-4">
+          <h3 class="text-lg font-semibold">Prescription Details</h3>
+          <button
+            id="closeModalBtn"
+            class="text-gray-600 hover:text-gray-900 focus:outline-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div
+          id="modalContent"
+          class="p-4 overflow-y-auto"
+          style="scrollbar-width: thin"
+        >
+          <!-- Content will be inserted here -->
+        </div>
+        <div class="flex justify-end p-4 border-t">
+          <button
+            id="downloadPrescriptionBtn"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+          >
+            <i class="fas fa-download"></i>
+            Download Prescription
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Add these styles to make the scrollbar visible and styled */
+      #modalContent::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #modalContent::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      #modalContent::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+
+      #modalContent::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      /* For Firefox */
+      #modalContent {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+      }
+
+      /* Add these new styles */
+      #downloadPrescriptionBtn {
+        transition: transform 0.2s;
+      }
+
+      #downloadPrescriptionBtn:hover {
+        transform: translateY(-1px);
+      }
+
+      #downloadPrescriptionBtn:active {
+        transform: translateY(1px);
+      }
+
+      .prescription-pdf {
+        font-family: "Arial", sans-serif;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .prescription-pdf h1 {
+        color: #2563eb;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .prescription-pdf .section {
+        margin-bottom: 15px;
+      }
+
+      .prescription-pdf .label {
+        font-weight: bold;
+        color: #1f2937;
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get current page path
+        const currentPath = window.location.pathname;
+
+        // Remove 'active' class from all links
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        // Add 'active' class based on current page
+        if (currentPath.includes("patient.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("pbookap.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        } else if (currentPath.includes("ai.html")) {
+          document.getElementById("ai-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        } else if (currentPath.includes("appointment.html")) {
+          document
+            .getElementById("view-appointments-link")
+            .classList.add("active");
+        } else if (currentPath.includes("scheme.html")) {
+          document.getElementById("view-schemes-link").classList.add("active");
+        } else if (currentPath.includes("health-monitor.html")) {
+          document
+            .getElementById("health-monitor-link")
+            .classList.add("active");
+        }
+      });
+
+      function openModal(content) {
+        const modal = document.getElementById("prescriptionModal");
+        const modalContent = document.getElementById("modalContent");
+
+        // Set content
+        modalContent.innerHTML = content;
+
+        // Disable body scroll
+        document.body.style.overflow = "hidden";
+
+        // Show modal
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function closeModal() {
+        const modal = document.getElementById("prescriptionModal");
+
+        // Enable body scroll
+        document.body.style.overflow = "auto";
+
+        // Hide modal
+        modal.classList.remove("flex");
+        modal.classList.add("hidden");
+      }
+
+      // Event Listeners for Modal
+      document.addEventListener("DOMContentLoaded", () => {
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const modal = document.getElementById("prescriptionModal");
+
+        // Close modal when close button clicked
+        closeModalBtn.addEventListener("click", closeModal);
+
+        // Close modal when clicking outside the modal content
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+            closeModal();
+          }
+        });
+      });
+
+      const downloadBtn = document.getElementById("downloadPrescriptionBtn");
+      if (downloadBtn) {
+        downloadBtn.addEventListener("click", generatePDF);
+      }
+
+      function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const modalContent = document.getElementById("modalContent");
+        const content = modalContent.innerText;
+
+        // Set up PDF styling
+        doc.setFont("helvetica");
+        doc.setFontSize(20);
+        doc.setTextColor(0, 0, 255);
+        doc.text("MedConnect Prescription", 20, 20);
+
+        // Add a line
+        doc.setLineWidth(0.5);
+        doc.line(20, 25, 190, 25);
+
+        // Reset text color and size for content
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+
+        // Split content into lines that fit the page width
+        const lines = doc.splitTextToSize(content, 170);
+
+        // Add lines to PDF starting at y=35
+        doc.text(lines, 20, 35);
+
+        // Generate timestamp for filename
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+        // Download the PDF
+        doc.save(`prescription-${timestamp}.pdf`);
+      }
+
+      // Update the showPrescriptionDetails function to store prescription data
+      let currentPrescription = null;
+
+      async function showPrescriptionDetails(prescriptionId) {
+        try {
+          const response = await fetch(`/api/prescriptions/${prescriptionId}`, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          });
+
+          if (!response.ok)
+            throw new Error("Failed to fetch prescription details");
+
+          const prescription = await response.json();
+          currentPrescription = prescription; // Store the prescription data
+
+          const detailsHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="font-semibold">Patient: ${
+                          prescription.patientId?.name || "Unassigned"
+                        }</p>
+                        <p class="text-sm text-gray-600">Doctor: ${
+                          prescription.doctorId?.name || "Unassigned"
+                        }</p>
+                        <p class="text-sm text-gray-600">Created: ${new Date(
+                          prescription.createdAt
+                        ).toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">AI Diagnosis:</h4>
+                        <div class="bg-gray-50 p-3 rounded-lg text-gray-700">
+                            ${
+                              prescription.aiDiagnosis ||
+                              "No AI Analysis Available"
+                            }
+                        </div>
+                    </div>
+                    
+                    ${
+                      prescription.medications &&
+                      prescription.medications.length > 0
+                        ? `
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Medications:</h4>
+                            <ul class="list-disc pl-5 space-y-2">
+                                ${prescription.medications
+                                  .map(
+                                    (med) => `
+                                    <li class="text-gray-700">
+                                        <span class="font-medium">${med.name}</span> - 
+                                        ${med.dosage} (${med.frequency})
+                                    </li>
+                                `
+                                  )
+                                  .join("")}
+                            </ul>
+                        </div>
+                    `
+                        : ""
+                    }
+                    
+                    ${
+                      prescription.doctorNotes
+                        ? `
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Doctor's Notes:</h4>
+                            <div class="bg-gray-50 p-3 rounded-lg text-gray-700">
+                                ${prescription.doctorNotes}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+                </div>
+            `;
+
+          openModal(detailsHTML);
+        } catch (error) {
+          console.error("Error fetching prescription details:", error);
+          alert("Failed to load prescription details");
+        }
+      }
+    </script>
+    <script src="patientscript.js"></script>
+    <script src="patientscript.js"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </body>
+</html>

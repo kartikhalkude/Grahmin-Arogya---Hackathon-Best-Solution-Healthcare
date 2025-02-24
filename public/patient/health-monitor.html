@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Health Monitoring - Patient Portal</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur", // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="patient.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
+    <!-- React and ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .sensor-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+      }
+
+      .sensor-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .update-info {
+        text-align: right;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+
+      .sensor-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .sensor-value {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #111827;
+        margin-top: 0.5rem;
+      }
+
+      .sensor-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+      }
+
+      .sensor-icon {
+        font-size: 1.5rem;
+        margin-left: auto;
+      }
+
+      @media (max-width: 1024px) {
+        .sensor-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .sensor-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span> &nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <div class="user-profile">
+              <span id="patientName"></span>
+            </div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="../patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="./pbookap.html" class="nav-link" id="appointments-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="./ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+          <a href="./scheme.html" id="view-schemes-link" class="nav-link">
+            <i class="fas fa-hand-holding-medical"></i>
+            <span>Health Schemes</span>
+          </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link active"
+          >
+            <i class="fas fa-heartbeat"></i>
+            <span>Health Monitor</span>
+          </a>
+
+          <a
+            href="medical-records.html"
+            id="medical-records-link"
+            class="nav-link"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <div id="root"></div>
+        </div>
+      </main>
+    </div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+      const { createClient } = supabase;
+
+      // Create Supabase client
+      const supabaseClient = createClient(
+        "https://vnyygeccunmwcpjqnyjt.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZueXlnZWNjdW5td2NwanFueWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjQ0MTcsImV4cCI6MjA1NTc0MDQxN30.wZKQGKDtmu4eB66RThoelIyGDMxfvCinfDvDDd1EVyc"
+      );
+
+      function HealthDashboard() {
+        const [healthData, setHealthData] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+        const [lastUpdate, setLastUpdate] = useState(null);
+        const [nextUpdate, setNextUpdate] = useState(null);
+        const [alerts, setAlerts] = useState([]);
+
+        // Chart refs
+        const heartRateChartRef = useRef(null);
+        const spo2ChartRef = useRef(null);
+
+        // Canvas refs
+        const heartRateCanvasRef = useRef(null);
+        const spo2CanvasRef = useRef(null);
+
+        // Animation refs
+        const heartRateRef = useRef(null);
+        const spo2Ref = useRef(null);
+        const temperatureRef = useRef(null);
+
+        // Health thresholds for anomaly detection
+        const HEALTH_THRESHOLDS = {
+          heart_rate: {
+            min: 60,
+            max: 100,
+            critical_min: 50,
+            critical_max: 120,
+            name: "Heart Rate",
+            unit: "BPM",
+          },
+          spo2: {
+            min: 95,
+            max: 100,
+            critical_min: 90,
+            critical_max: 100,
+            name: "SpO2",
+            unit: "%",
+          },
+          temperature: {
+            min: 36.5,
+            max: 37.5,
+            critical_min: 35.0,
+            critical_max: 39.0,
+            name: "Temperature",
+            unit: "°C",
+          },
+        };
+
+        // Helper function to get latest value with animation and alert check
+        const getLatestValue = (key, ref) => {
+          if (healthData.length === 0) return "--";
+          const value = healthData[healthData.length - 1][key];
+          const threshold = HEALTH_THRESHOLDS[key];
+
+          // Add pulse animation
+          if (ref.current) {
+            ref.current.classList.add("pulse");
+            setTimeout(() => {
+              ref.current.classList.remove("pulse");
+            }, 1000);
+
+            // Add color based on value
+            if (threshold) {
+              if (
+                value < threshold.critical_min ||
+                value > threshold.critical_max
+              ) {
+                ref.current.style.color = "#ef4444"; // red for critical
+              } else if (value < threshold.min || value > threshold.max) {
+                ref.current.style.color = "#f59e0b"; // yellow for warning
+              } else {
+                ref.current.style.color = "#10b981"; // green for normal
+              }
+            }
+          }
+
+          return value;
+        };
+
+        // Helper function to format time for charts
+        const formatTime = (isoString) => {
+          const date = new Date(isoString);
+          return date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+        };
+
+        // Helper function to create/update charts
+        const updateCharts = (data) => {
+          const times = data.map((item) => formatTime(item.created_at));
+          const heartRates = data.map((item) => item.heart_rate);
+          const spo2Values = data.map((item) => item.spo2);
+          const stepValues = data.map((item) => item.steps);
+
+          const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+              duration: 750,
+              easing: "easeInOutQuart",
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              annotation: {
+                annotations: {
+                  criticalLineMin: {
+                    type: "line",
+                    yMin: 0,
+                    yMax: 0,
+                    borderColor: "#ef4444",
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                      content: "Critical Min",
+                      enabled: true,
+                      position: "left",
+                    },
+                  },
+                  criticalLineMax: {
+                    type: "line",
+                    yMin: 0,
+                    yMax: 0,
+                    borderColor: "#ef4444",
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                      content: "Critical Max",
+                      enabled: true,
+                      position: "right",
+                    },
+                  },
+                  warningLineMin: {
+                    type: "line",
+                    yMin: 0,
+                    yMax: 0,
+                    borderColor: "#f59e0b",
+                    borderWidth: 2,
+                    borderDash: [2, 2],
+                    label: {
+                      content: "Warning Min",
+                      enabled: true,
+                      position: "left",
+                    },
+                  },
+                  warningLineMax: {
+                    type: "line",
+                    yMin: 0,
+                    yMax: 0,
+                    borderColor: "#f59e0b",
+                    borderWidth: 2,
+                    borderDash: [2, 2],
+                    label: {
+                      content: "Warning Max",
+                      enabled: true,
+                      position: "right",
+                    },
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+              y: {
+                beginAtZero: false,
+                grid: {
+                  color: "rgba(0,0,0,0.1)",
+                },
+              },
+            },
+          };
+
+          // Heart Rate Chart
+          if (heartRateChartRef.current) {
+            heartRateChartRef.current.destroy();
+          }
+          if (heartRateCanvasRef.current) {
+            const ctx = heartRateCanvasRef.current.getContext("2d");
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, "rgba(255, 115, 0, 0.4)");
+            gradient.addColorStop(1, "rgba(255, 115, 0, 0)");
+
+            heartRateChartRef.current = new Chart(heartRateCanvasRef.current, {
+              type: "line",
+              data: {
+                labels: times,
+                datasets: [
+                  {
+                    label: "Heart Rate (BPM)",
+                    data: heartRates,
+                    borderColor: "#ff7300",
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: heartRates.map((hr) =>
+                      hr < HEALTH_THRESHOLDS.heart_rate.critical_min ||
+                      hr > HEALTH_THRESHOLDS.heart_rate.critical_max
+                        ? "#ef4444"
+                        : hr < HEALTH_THRESHOLDS.heart_rate.min ||
+                          hr > HEALTH_THRESHOLDS.heart_rate.max
+                        ? "#f59e0b"
+                        : "#ff7300"
+                    ),
+                  },
+                ],
+              },
+              options: {
+                ...commonOptions,
+                scales: {
+                  ...commonOptions.scales,
+                  y: {
+                    ...commonOptions.scales.y,
+                    suggestedMin: 40,
+                    suggestedMax: 140,
+                  },
+                },
+                plugins: {
+                  ...commonOptions.plugins,
+                  annotation: {
+                    annotations: {
+                      ...commonOptions.plugins.annotation.annotations,
+                      criticalLineMin: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .criticalLineMin,
+                        yMin: HEALTH_THRESHOLDS.heart_rate.critical_min,
+                        yMax: HEALTH_THRESHOLDS.heart_rate.critical_min,
+                      },
+                      criticalLineMax: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .criticalLineMax,
+                        yMin: HEALTH_THRESHOLDS.heart_rate.critical_max,
+                        yMax: HEALTH_THRESHOLDS.heart_rate.critical_max,
+                      },
+                      warningLineMin: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .warningLineMin,
+                        yMin: HEALTH_THRESHOLDS.heart_rate.min,
+                        yMax: HEALTH_THRESHOLDS.heart_rate.min,
+                      },
+                      warningLineMax: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .warningLineMax,
+                        yMin: HEALTH_THRESHOLDS.heart_rate.max,
+                        yMax: HEALTH_THRESHOLDS.heart_rate.max,
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          }
+
+          // SpO2 Chart with similar anomaly detection
+          if (spo2ChartRef.current) {
+            spo2ChartRef.current.destroy();
+          }
+          if (spo2CanvasRef.current) {
+            const ctx = spo2CanvasRef.current.getContext("2d");
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, "rgba(56, 121, 8, 0.4)");
+            gradient.addColorStop(1, "rgba(56, 121, 8, 0)");
+
+            spo2ChartRef.current = new Chart(spo2CanvasRef.current, {
+              type: "line",
+              data: {
+                labels: times,
+                datasets: [
+                  {
+                    label: "SpO2 (%)",
+                    data: spo2Values,
+                    borderColor: "#387908",
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: spo2Values.map((sp) =>
+                      sp < HEALTH_THRESHOLDS.spo2.critical_min
+                        ? "#ef4444"
+                        : sp < HEALTH_THRESHOLDS.spo2.min
+                        ? "#f59e0b"
+                        : "#387908"
+                    ),
+                  },
+                ],
+              },
+              options: {
+                ...commonOptions,
+                scales: {
+                  ...commonOptions.scales,
+                  y: {
+                    ...commonOptions.scales.y,
+                    suggestedMin: 85,
+                    suggestedMax: 100,
+                  },
+                },
+                plugins: {
+                  ...commonOptions.plugins,
+                  annotation: {
+                    annotations: {
+                      criticalLineMin: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .criticalLineMin,
+                        yMin: HEALTH_THRESHOLDS.spo2.critical_min,
+                        yMax: HEALTH_THRESHOLDS.spo2.critical_min,
+                      },
+                      warningLineMin: {
+                        ...commonOptions.plugins.annotation.annotations
+                          .warningLineMin,
+                        yMin: HEALTH_THRESHOLDS.spo2.min,
+                        yMax: HEALTH_THRESHOLDS.spo2.min,
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          }
+        };
+
+        // Add this function to check for alerts
+        const checkAlerts = (data) => {
+          if (!data || data.length === 0) return [];
+
+          const latestData = data[data.length - 1];
+          const newAlerts = [];
+
+          Object.entries(HEALTH_THRESHOLDS).forEach(([key, threshold]) => {
+            const value = latestData[key];
+            if (
+              value < threshold.critical_min ||
+              value > threshold.critical_max
+            ) {
+              newAlerts.push({
+                type: "CRITICAL",
+                severity: "high",
+                message: `Critical ${threshold.name} level detected: ${value}${threshold.unit}`,
+                timestamp: new Date().toLocaleTimeString(),
+              });
+            } else if (value < threshold.min || value > threshold.max) {
+              newAlerts.push({
+                type: "WARNING",
+                severity: "medium",
+                message: `Abnormal ${threshold.name} level detected: ${value}${threshold.unit}`,
+                timestamp: new Date().toLocaleTimeString(),
+              });
+            }
+          });
+
+          return newAlerts;
+        };
+
+        // Add this function to calculate time until next update
+        const updateNextUpdateTime = () => {
+          const now = new Date();
+          const secondsSinceLastUpdate = lastUpdate
+            ? Math.floor((now - new Date(lastUpdate)) / 1000)
+            : 0;
+          const secondsUntilNext = 10 - (secondsSinceLastUpdate % 10);
+          setNextUpdate(secondsUntilNext);
+        };
+
+        // Modify the fetchLatestData function to include alert checking
+        const fetchLatestData = async () => {
+          try {
+            let { data, error: fetchError } = await supabaseClient
+              .from("health_data")
+              .select("*")
+              .order("created_at", { ascending: false })
+              .limit(20);
+
+            if (fetchError) {
+              console.error("Error fetching data:", fetchError);
+              setError(fetchError.message);
+              return;
+            }
+
+            const formattedData = data
+              .map((item) => ({
+                ...item,
+                displayTime: formatTime(item.created_at),
+              }))
+              .reverse();
+
+            setHealthData(formattedData);
+
+            // Check for alerts
+            const newAlerts = checkAlerts(formattedData);
+            if (newAlerts.length > 0) {
+              setAlerts((prev) => [...newAlerts, ...prev].slice(0, 10)); // Keep last 10 alerts
+
+              // Show browser notification for critical alerts
+              newAlerts.forEach((alert) => {
+                if (
+                  alert.type === "CRITICAL" &&
+                  Notification.permission === "granted"
+                ) {
+                  new Notification("Health Alert", {
+                    body: alert.message,
+                    icon: "/path/to/alert-icon.png",
+                  });
+                }
+              });
+            }
+
+            setLastUpdate(new Date().toLocaleString());
+            updateNextUpdateTime();
+          } catch (err) {
+            console.error("Error in fetchLatestData:", err);
+          }
+        };
+
+        // Request notification permission on component mount
+        useEffect(() => {
+          if (Notification.permission === "default") {
+            Notification.requestPermission();
+          }
+        }, []);
+
+        useEffect(() => {
+          const fetchInitialData = async () => {
+            setLoading(true);
+            await fetchLatestData();
+            setLoading(false);
+          };
+
+          fetchInitialData();
+
+          // Set up auto-refresh interval
+          const refreshInterval = setInterval(() => {
+            console.log("Auto-refreshing data...");
+            fetchLatestData();
+          }, 10000);
+
+          // Set up real-time subscription as backup
+          const subscription = supabaseClient
+            .channel("realtime:health_data")
+            .on(
+              "postgres_changes",
+              { event: "INSERT", schema: "public", table: "health_data" },
+              (payload) => {
+                console.log("Real-time update received:", payload.new);
+                const newRecord = {
+                  ...payload.new,
+                  displayTime: formatTime(payload.new.created_at),
+                };
+
+                setHealthData((prevData) => {
+                  const updatedData = [...prevData, newRecord].slice(-20);
+                  return updatedData;
+                });
+                setLastUpdate(new Date().toLocaleString());
+                updateNextUpdateTime();
+              }
+            )
+            .subscribe((status) => {
+              console.log("Subscription status:", status);
+            });
+
+          // Update the countdown timer every second
+          const timer = setInterval(() => {
+            updateNextUpdateTime();
+          }, 1000);
+
+          // Cleanup function
+          return () => {
+            clearInterval(refreshInterval);
+            clearInterval(timer);
+            if (heartRateChartRef.current) heartRateChartRef.current.destroy();
+            if (spo2ChartRef.current) spo2ChartRef.current.destroy();
+            supabaseClient.removeChannel(subscription);
+          };
+        }, []);
+
+        // Effect for updating charts when data changes
+        useEffect(() => {
+          if (!loading && healthData.length > 0) {
+            updateCharts(healthData);
+          }
+        }, [healthData, loading]);
+
+        // Simple Loading Component
+        if (loading)
+          return (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-xl font-semibold text-gray-600">
+                Loading health data...
+              </div>
+            </div>
+          );
+
+        // Error Component
+        if (error)
+          return (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-xl font-semibold text-red-600">
+                Error loading data: {error}
+              </div>
+            </div>
+          );
+
+        // Main Dashboard Component
+        return (
+          <div className="p-6">
+            <div className="dashboard-header">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Health Dashboard
+              </h1>
+              <div className="update-info">
+                <div>Last updated: {lastUpdate}</div>
+                <div className="text-blue-500">
+                  Next update in: {nextUpdate}s
+                </div>
+              </div>
+            </div>
+
+            {/* Alerts Section */}
+            {alerts.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Health Alerts</h2>
+                <div className="space-y-2">
+                  {alerts.map((alert, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg ${
+                        alert.type === "CRITICAL"
+                          ? "bg-red-100 border-red-400 text-red-700"
+                          : "bg-yellow-100 border-yellow-400 text-yellow-700"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="font-semibold">{alert.type}: </span>
+                          {alert.message}
+                        </div>
+                        <div className="text-sm opacity-75">
+                          {alert.timestamp}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sensor Cards */}
+            <div className="sensor-grid">
+              <div className="sensor-card">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="sensor-label">Heart Rate</div>
+                    <div className="sensor-value" ref={heartRateRef}>
+                      {getLatestValue("heart_rate", heartRateRef)} BPM
+                    </div>
+                  </div>
+                  <i className="fas fa-heartbeat text-red-500 sensor-icon"></i>
+                </div>
+              </div>
+
+              <div className="sensor-card">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="sensor-label">Blood Oxygen</div>
+                    <div className="sensor-value" ref={spo2Ref}>
+                      {getLatestValue("spo2", spo2Ref)}%
+                    </div>
+                  </div>
+                  <i className="fas fa-lungs text-blue-500 sensor-icon"></i>
+                </div>
+              </div>
+
+              <div className="sensor-card">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="sensor-label">Temperature</div>
+                    <div className="sensor-value" ref={temperatureRef}>
+                      {getLatestValue("temperature", temperatureRef)}°C
+                    </div>
+                  </div>
+                  <i className="fas fa-thermometer-half text-green-500 sensor-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            {/* Charts */}
+            <div className="space-y-6">
+              <div className="chart-container">
+                <h2 className="text-xl font-semibold mb-4">Heart Rate (BPM)</h2>
+                <div style={{ height: "300px" }}>
+                  <canvas ref={heartRateCanvasRef}></canvas>
+                </div>
+              </div>
+
+              <div className="chart-container">
+                <h2 className="text-xl font-semibold mb-4">
+                  Blood Oxygen (SpO2 %)
+                </h2>
+                <div style={{ height: "300px" }}>
+                  <canvas ref={spo2CanvasRef}></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Render the app
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<HealthDashboard />);
+    </script>
+  </body>
+</html>

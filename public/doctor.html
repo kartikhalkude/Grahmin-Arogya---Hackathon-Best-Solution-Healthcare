@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Synapse</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="doctor/doctor.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-logo">
+          <svg
+            class="w-8 h-8"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Clean Medical Cross -->
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="#dc2626"
+              class="text-red-600"
+            />
+            <path
+              d="M12 8v8M8 12h8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span> &nbsp;ग्रामीण-आरोग्य</span>
+        </div>
+
+        <div class="header-actions">
+          <span id="doctorName" class="text-gray-700 font-medium"></span>
+          <button onclick="logout()" class="flex items-center gap-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="doctor.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="doctor/prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="doctor/appointment.html"
+            class="nav-link"
+            id="appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <div class="content-container">
+          <!-- Welcome Section -->
+          <div class="welcome-section">
+            <h1 class="text-3xl font-bold">
+              Welcome Back, Dr. <span id="welcomeName"></span>
+            </h1>
+            <p class="mt-2 opacity-90">
+              Manage your patients and prescriptions with our AI-powered system
+            </p>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon bg-blue-100 text-blue-600">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Today's Appointments</h3>
+                <p id="appointmentCount">-</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-purple-100 text-purple-600">
+                <i class="fas fa-file-prescription"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Pending Reviews</h3>
+                <p id="pendingCount">-</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-green-100 text-green-600">
+                <i class="fas fa-user-injured"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Total Patients</h3>
+                <p id="patientCount">-</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Appointments -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Recent Appointments</h2>
+                <a href="doctor/appointment.html" class="view-all">View All</a>
+              </div>
+              <div id="recentAppointments" class="space-y-4">
+                <!-- Appointments will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Pending Prescriptions -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Pending Prescriptions</h2>
+                <a href="doctor/prescription.html" class="view-all">View All</a>
+              </div>
+              <div id="pendingPrescriptionsList" class="space-y-4">
+                <!-- Pending prescriptions will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="./doctor/doctor.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!sessionStorage.getItem("token")) {
+          window.location.href = "/index.html";
+          return;
+        }
+        loadDoctorInfo();
+        loadDashboardData();
+      });
+
+      async function loadDoctorInfo() {
+        try {
+          const response = await fetch("/api/doctor/info", {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          });
+          const data = await response.json();
+          if (data && data.name) {
+            document.getElementById(
+              "doctorName"
+            ).textContent = `Dr. ${data.name}`;
+            document.getElementById("welcomeName").textContent = data.name;
+          }
+        } catch (error) {
+          console.error("Error loading doctor info:", error);
+        }
+      }
+
+      async function loadDashboardData() {
+        try {
+          const [appointmentsResponse, prescriptionsResponse] =
+            await Promise.all([
+              fetch("/api/doctor/appointments", {
+                headers: {
+                  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+              }),
+              fetch("/api/prescriptions", {
+                headers: {
+                  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+              }),
+            ]);
+
+          const appointments = await appointmentsResponse.json();
+          const prescriptions = await prescriptionsResponse.json();
+
+          updateDashboardStats(appointments, prescriptions);
+          displayRecentAppointments(appointments);
+          displayPendingPrescriptions(
+            prescriptions.filter((p) => p.status === "pending")
+          );
+        } catch (error) {
+          console.error("Error loading dashboard data:", error);
+        }
+      }
+
+      function updateDashboardStats(appointments, prescriptions) {
+        const today = new Date().toISOString().split("T")[0];
+        const todayAppointments = appointments.filter(
+          (apt) => apt.date.split("T")[0] === today
+        );
+        document.getElementById("appointmentCount").textContent =
+          todayAppointments.length;
+
+        const pendingPrescriptions = prescriptions.filter(
+          (p) => p.status === "pending"
+        );
+        document.getElementById("pendingCount").textContent =
+          pendingPrescriptions.length;
+
+        const uniquePatients = new Set(
+          appointments.map((apt) => apt.patient._id)
+        );
+        document.getElementById("patientCount").textContent =
+          uniquePatients.size;
+      }
+
+      function displayRecentAppointments(appointments) {
+        const container = document.getElementById("recentAppointments");
+        if (appointments.length === 0) {
+          container.innerHTML =
+            '<p class="text-gray-500">No appointments scheduled</p>';
+          return;
+        }
+
+        container.innerHTML = appointments
+          .slice(0, 5)
+          .map(
+            (apt) => `
+              <div class="border-b border-gray-200 py-3">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p class="font-medium text-gray-800">${apt.patient.name}</p>
+                    <p class="text-sm text-gray-500">${new Date(
+                      apt.date
+                    ).toLocaleDateString()} - ${apt.time}</p>
+                  </div>
+                  <span class="status-badge ${getStatusBadgeColor(apt.status)}">
+                    ${apt.status}
+                  </span>
+                </div>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function getStatusBadgeColor(status) {
+        const colors = {
+          scheduled: "status-scheduled",
+          completed: "status-completed",
+          cancelled: "status-cancelled",
+        };
+        return colors[status] || "";
+      }
+
+      function logout() {
+        sessionStorage.removeItem("token");
+        window.location.href = "/index.html";
+      }
+    </script>
+  </body>
+</html>

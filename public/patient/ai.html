@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Prescription - Synapse</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur", // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="patient.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>&nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="/patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/patient/pbookap.html"
+            class="nav-link"
+            id="appointments-link"
+          >
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="/patient/ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+          <a href="./scheme.html" id="view-schemes-link" class="nav-link">
+            <i class="fas fa-hand-holding-medical w-6"></i>
+            <span class="ml-2">Health Schemes</span>
+          </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link"
+          >
+            <i class="fas fa-heartbeat w-6"></i>
+            <span class="ml-2">Health Monitor</span>
+          </a>
+          <a
+            href="medical-records.html"
+            id="medical-records-link"
+            class="nav-link"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <!-- Left Column - Symptoms Form -->
+          <div class="form-section bg-white rounded-lg shadow-sm p-6 mt-6">
+            <div
+              style="
+                background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+                border-radius: 0.5rem;
+                padding: 30px;
+                color: white;
+                margin-bottom: 2rem;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+              "
+            >
+              <h1 style="font-size: 1.875rem; font-weight: bold">
+                <span style="color: #eee7bc">Describe your Symptoms</span>
+                <span id="welcomeName" style="color: #00e676"></span>
+              </h1>
+            </div>
+
+            <form id="symptomForm">
+              <div class="form-group">
+                <label>Patient Name:</label>
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="patientFullName"
+                    required
+                    class="w-full pr-12"
+                  />
+                  <button
+                    type="button"
+                    class="speech-button absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-all"
+                    data-target="patientFullName"
+                    title="Click to speak your name"
+                  >
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group double">
+                <div>
+                  <label>Age:</label>
+                  <div class="relative">
+                    <input
+                      type="number"
+                      id="patientAge"
+                      required
+                      min="1"
+                      max="120"
+                      class="w-full pr-12"
+                    />
+                    <button
+                      type="button"
+                      class="speech-button absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-all"
+                      data-target="patientAge"
+                      title="Click to speak your age"
+                    >
+                      <i class="fas fa-microphone"></i>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label>Severity (1-10):</label>
+                  <div class="relative">
+                    <input
+                      type="number"
+                      id="severity"
+                      min="1"
+                      max="10"
+                      required
+                      class="w-full pr-12"
+                    />
+                    <button
+                      type="button"
+                      class="speech-button absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-all"
+                      data-target="severity"
+                      title="Click to speak severity level"
+                    >
+                      <i class="fas fa-microphone"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Preferred Language:</label>
+                <select id="prescriptionLanguage" required>
+                  <option value="English">English</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="Kannada">Kannada</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Symptoms:</label>
+                <div class="flex items-center gap-2">
+                  <div class="relative flex-1">
+                    <textarea
+                      id="symptoms"
+                      rows="4"
+                      required
+                      placeholder="Please describe your symptoms in detail..."
+                      class="w-full pr-12"
+                    ></textarea>
+                    <button
+                      type="button"
+                      class="speech-button absolute right-2 bottom-2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-all"
+                      data-target="symptoms"
+                      title="Click to speak your symptoms"
+                    >
+                      <i class="fas fa-microphone"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Duration:</label>
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="duration"
+                    required
+                    placeholder="e.g., 3 days, 1 week, etc."
+                    class="w-full pr-12"
+                  />
+                  <button
+                    type="button"
+                    class="speech-button absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-all"
+                    data-target="duration"
+                    title="Click to speak duration"
+                  >
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="analyzeSymptoms()"
+                >
+                  Analyze with AI
+                </button>
+
+                <div id="aiDiagnosisBox" class="info-box hidden"></div>
+
+                <div class="doctor-selection">
+                  <label>Select Doctor:</label>
+                  <div class="select-wrapper">
+                    <select id="doctorSelect" required>
+                      <option value="">Choose a doctor...</option>
+                    </select>
+                  </div>
+                  <div id="doctorInfo" class="info-box hidden">
+                    <p>
+                      <strong>Specialization:</strong>
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-secondary hidden"
+                  id="submitSymptomsBtn"
+                >
+                  Submit to Doctor
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="ai-loading-container" id="aiLoadingAnimation">
+            <div class="neural-network"></div>
+            <div class="brain-loader"></div>
+
+            <div class="loading-text">Analyzing Symptoms</div>
+            <div class="loading-subtext">Reviewing your data</div>
+
+            <div class="hex-background"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get current page path
+        const currentPath = window.location.pathname;
+
+        // Remove 'active' class from all links
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        // Add 'active' class based on current page
+        if (currentPath.includes("patient.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("pbookap.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        } else if (currentPath.includes("ai.html")) {
+          document.getElementById("ai-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        } else if (currentPath.includes("appointment.html")) {
+          document
+            .getElementById("view-appointments-link")
+            .classList.add("active");
+        } else if (currentPath.includes("scheme.html")) {
+          document.getElementById("view-schemes-link").classList.add("active");
+        } else if (currentPath.includes("health-monitor.html")) {
+          document
+            .getElementById("health-monitor-link")
+            .classList.add("active");
+        }
+      });
+    </script>
+    <script src="patientscript.js"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      /* Speech Recognition Styles */
+      .speech-pulse {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #2563eb;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      #speechButton.recording {
+        background-color: #fee2e2;
+        color: #dc2626;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      .recording-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #dc2626;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: recordingPulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes recordingPulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Additional styles for speech buttons */
+      .speech-button {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background-color: #f3f4f6;
+        transition: all 0.2s ease;
+        z-index: 10;
+      }
+
+      .speech-button:hover {
+        background-color: #e5e7eb;
+      }
+
+      .speech-button.recording {
+        background-color: #fee2e2;
+        color: #dc2626;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      .speech-status {
+        font-size: 0.875rem;
+        color: #2563eb;
+        margin-top: 0.5rem;
+      }
+
+      /* Form field styles */
+      .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Input field styles */
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        width: 100%;
+        padding: 0.75rem 3rem 0.75rem 1rem !important;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        transition: all 0.2s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      /* Textarea specific styles */
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      /* Microphone button for textarea */
+      textarea + .speech-button {
+        top: auto;
+        bottom: 8px;
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Initialize speech recognition
+        if (
+          !("webkitSpeechRecognition" in window) &&
+          !("SpeechRecognition" in window)
+        ) {
+          document.querySelectorAll(".speech-button").forEach((button) => {
+            button.style.display = "none";
+          });
+          console.log("Speech recognition not supported");
+          return;
+        }
+
+        const recognition = new (window.webkitSpeechRecognition ||
+          window.SpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+
+        let currentTarget = null;
+        let isRecording = false;
+
+        // Function to update recognition language
+        function updateRecognitionLanguage() {
+          const language = document.getElementById(
+            "prescriptionLanguage"
+          ).value;
+          switch (language) {
+            case "Hindi":
+              recognition.lang = "hi-IN";
+              break;
+            case "Marathi":
+              recognition.lang = "mr-IN";
+              break;
+            case "Kannada":
+              recognition.lang = "kn-IN";
+              break;
+            default:
+              recognition.lang = "en-US";
+          }
+        }
+
+        // Function to start recording
+        function startRecording(button, targetId) {
+          if (isRecording) {
+            recognition.stop();
+            return;
+          }
+
+          // Reset all buttons to default state
+          document.querySelectorAll(".speech-button").forEach((btn) => {
+            btn.classList.remove("recording");
+            btn.innerHTML = '<i class="fas fa-microphone"></i>';
+          });
+
+          // Update current target and start recording
+          currentTarget = document.getElementById(targetId);
+          updateRecognitionLanguage();
+          recognition.start();
+
+          // Update button state
+          button.classList.add("recording");
+          button.innerHTML = '<i class="fas fa-stop"></i>';
+          isRecording = true;
+
+          // Show status indicator
+          const statusDiv = document.createElement("div");
+          statusDiv.className =
+            "speech-status mt-1 text-sm text-blue-600 flex items-center gap-2";
+          statusDiv.innerHTML = `
+            <div class="speech-pulse"></div>
+            <span>Listening...</span>
+          `;
+
+          // Remove any existing status
+          const existingStatus =
+            currentTarget.parentElement.querySelector(".speech-status");
+          if (existingStatus) existingStatus.remove();
+
+          currentTarget.parentElement.appendChild(statusDiv);
+        }
+
+        // Handle speech recognition results
+        recognition.onresult = (event) => {
+          let finalTranscript = "";
+          let interimTranscript = "";
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          if (finalTranscript && currentTarget) {
+            // Handle different input types
+            if (currentTarget.type === "number") {
+              // Extract numbers from speech
+              const number = finalTranscript.match(/\d+/);
+              if (number) {
+                currentTarget.value = number[0];
+              }
+            } else {
+              // For text inputs and textareas
+              const currentText = currentTarget.value;
+              currentTarget.value =
+                currentText +
+                (currentText && !currentText.endsWith(" ") ? " " : "") +
+                finalTranscript;
+            }
+          }
+        };
+
+        // Handle speech recognition end
+        recognition.onend = () => {
+          isRecording = false;
+          if (currentTarget) {
+            const button = document.querySelector(
+              `[data-target="${currentTarget.id}"]`
+            );
+            if (button) {
+              button.classList.remove("recording");
+              button.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+            const status =
+              currentTarget.parentElement.querySelector(".speech-status");
+            if (status) status.remove();
+          }
+        };
+
+        // Handle speech recognition errors
+        recognition.onerror = (event) => {
+          console.error("Speech recognition error:", event.error);
+          isRecording = false;
+          if (currentTarget) {
+            const button = document.querySelector(
+              `[data-target="${currentTarget.id}"]`
+            );
+            if (button) {
+              button.classList.remove("recording");
+              button.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+            const status =
+              currentTarget.parentElement.querySelector(".speech-status");
+            if (status) status.remove();
+          }
+        };
+
+        // Add click handlers to all speech buttons
+        document.querySelectorAll(".speech-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId = button.getAttribute("data-target");
+            startRecording(button, targetId);
+          });
+        });
+
+        // Update recognition language when prescription language changes
+        document
+          .getElementById("prescriptionLanguage")
+          .addEventListener("change", updateRecognitionLanguage);
+      });
+    </script>
+  </body>
+</html>

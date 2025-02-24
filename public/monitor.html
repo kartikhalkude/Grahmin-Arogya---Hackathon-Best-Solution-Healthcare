@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Checkup Monitoring System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+        .health-card {
+            border-radius: 15px;
+            background: white;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+        }
+        
+        .health-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .parameter-input {
+            transition: all 0.3s ease;
+        }
+
+        .parameter-input:focus {
+            border-color: #667eea;
+            ring: 2px;
+            ring-color: #667eea;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Health Checkup Monitor</h1>
+            <p class="text-gray-600">Track your health parameters and get personalized recommendations</p>
+        </div>
+
+        <!-- Health Parameters Input Form -->
+        <div class="health-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">Enter Health Parameters</h2>
+            <form id="healthForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-gray-700 mb-2">Blood Pressure (mm Hg)</label>
+                    <input type="text" name="bloodPressure" class="parameter-input w-full p-2 border rounded" placeholder="120/80">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Blood Sugar (mg/dL)</label>
+                    <input type="number" name="bloodSugar" class="parameter-input w-full p-2 border rounded" placeholder="100">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Cholesterol (mg/dL)</label>
+                    <input type="number" name="cholesterol" class="parameter-input w-full p-2 border rounded" placeholder="200">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">BMI</label>
+                    <input type="number" name="bmi" step="0.1" class="parameter-input w-full p-2 border rounded" placeholder="22.5">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Heart Rate (bpm)</label>
+                    <input type="number" name="heartRate" class="parameter-input w-full p-2 border rounded" placeholder="72">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Oxygen Saturation (%)</label>
+                    <input type="number" name="oxygenSaturation" class="parameter-input w-full p-2 border rounded" placeholder="98">
+                </div>
+                <div class="md:col-span-2 lg:col-span-3">
+                    <label class="block text-gray-700 mb-2">Additional Notes</label>
+                    <textarea name="notes" class="parameter-input w-full p-2 border rounded" rows="3" placeholder="Any additional symptoms or concerns..."></textarea>
+                </div>
+                <div class="md:col-span-2 lg:col-span-3">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Health Status Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="health-card">
+                <h2 class="text-xl font-semibold mb-4">Health Status Overview</h2>
+                <div id="healthStatus" class="space-y-4">
+                    <!-- Status will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="health-card">
+                <h2 class="text-xl font-semibold mb-4">Next Checkup Schedule</h2>
+                <div id="nextCheckup" class="space-y-4">
+                    <!-- Schedule will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Previous Reports -->
+        <div class="health-card">
+            <h2 class="text-xl font-semibold mb-4">Previous Health Reports</h2>
+            <div id="previousReports" class="divide-y">
+                <!-- Reports will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!sessionStorage.getItem('token')) {
+                window.location.href = '/index.html';
+                return;
+            }
+            loadHealthData();
+            setupFormSubmission();
+        });
+
+        async function loadHealthData() {
+            try {
+                const response = await fetch('/api/health-reports', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                updateHealthDisplay(data);
+            } catch (error) {
+                console.error('Error loading health data:', error);
+            }
+        }
+
+        function setupFormSubmission() {
+            document.getElementById('healthForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const reportData = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('/api/health-reports', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(reportData)
+                    });
+
+                    if (response.ok) {
+                        alert('Health report submitted successfully!');
+                        loadHealthData();
+                        e.target.reset();
+                    } else {
+                        throw new Error('Failed to submit report');
+                    }
+                } catch (error) {
+                    console.error('Error submitting report:', error);
+                    alert('Failed to submit health report. Please try again.');
+                }
+            });
+        }
+
+        function updateHealthDisplay(data) {
+            // Update health status
+            const healthStatus = document.getElementById('healthStatus');
+            const latestReport = data.reports[0];
+            
+            if (latestReport) {
+                healthStatus.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-gray-600">Blood Pressure</p>
+                            <p class="font-semibold">${latestReport.bloodPressure}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Blood Sugar</p>
+                            <p class="font-semibold">${latestReport.bloodSugar} mg/dL</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Cholesterol</p>
+                            <p class="font-semibold">${latestReport.cholesterol} mg/dL</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">BMI</p>
+                            <p class="font-semibold">${latestReport.bmi}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                healthStatus.innerHTML = '<p class="text-gray-500">No health reports available</p>';
+            }
+
+            // Update next checkup
+            const nextCheckup = document.getElementById('nextCheckup');
+            if (data.nextCheckup) {
+                nextCheckup.innerHTML = `
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="font-semibold text-blue-800">Next Checkup Due:</p>
+                        <p class="text-blue-600">${new Date(data.nextCheckup.date).toLocaleDateString()}</p>
+                        <p class="text-sm text-blue-600 mt-2">${data.nextCheckup.notes || 'Regular checkup'}</p>
+                    </div>
+                `;
+            }
+
+            // Update previous reports
+            const previousReports = document.getElementById('previousReports');
+            previousReports.innerHTML = data.reports.map(report => `
+                <div class="py-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold">${new Date(report.date).toLocaleDateString()}</p>
+                            <p class="text-sm text-gray-600">Report ID: ${report._id}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm ${getStatusClass(report.status)}">
+                            ${report.status}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-2">${report.notes || 'No additional notes'}</p>
+                </div>
+            `).join('');
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'normal':
+                    return 'bg-green-100 text-green-800';
+                case 'attention':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'critical':
+                    return 'bg-red-100 text-red-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+    </script>
+</body>
+</html>

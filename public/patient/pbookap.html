@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Appointment - Synapse</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    /> 
+    <link rel="stylesheet" href="patient.css" />
+    <!-- Add Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur",
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <style>
+      /* Custom styles for Google Translate widget */
+      .goog-te-combo {
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        color: #374151;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .goog-te-combo:hover {
+        border-color: #3b82f6;
+      }
+      .goog-te-combo:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
+      .goog-te-gadget {
+        font-family: "Inter", sans-serif !important;
+        color: #374151 !important;
+      }
+      .goog-te-gadget span {
+        display: none;
+      }
+      .goog-te-gadget select {
+        margin-right: 0 !important;
+      }
+      #google_translate_element {
+        margin-right: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span> &nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+        <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/patient.html" class="nav-link" id="dashboard-link">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+          <a
+            href="/patient/pbookap.html"
+            class="nav-link"
+            id="appointments-link"
+          >
+                <i class="fas fa-calendar-alt"></i>
+                <span>Book Appointment</span>
+            </a>
+            <a href="/patient/ai.html" class="nav-link" id="ai-link">
+                <i class="fas fa-robot"></i>
+                <span>AI Prescription</span>
+            </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+                <i class="fas fa-file-medical"></i>
+                <span>Prescriptions</span>
+            </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+                <i class="fas fa-clock"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="scheme.html" id="view-schemes-link" class="nav-link">
+                <i class="fas fa-hand-holding-medical w-6"></i>
+                <span class="ml-2">Health Schemes</span>
+            </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link"
+          >
+            <i class="fas fa-heartbeat w-6"></i>
+            <span class="ml-2">Health Monitor</span>
+          </a>
+
+          <a
+            href="medical-records.html"
+            id="medical-records-link"
+            class="nav-link"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+    </aside>
+  
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <div
+            class="appointment-section bg-white rounded-lg shadow-sm p-6 mt-6"
+          >
+            <div
+              style="
+                background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+                border-radius: 0.5rem;
+                padding: 30px;
+                color: white;
+                margin-bottom: 2rem;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+              "
+            >
+              <h1 style="font-size: 1.875rem; font-weight: bold">
+                <span style="color: #eee7bc">Book an Appointment</span>
+                <span id="welcomeName" style="color: #00e676"></span>
+              </h1>
+            </div>
+            <form id="appointmentForm" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label class="block text-gray-700 font-medium"
+                    >Select Doctor</label
+                  >
+                  <select
+                    id="appointmentDoctorSelect"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    required
+                  >
+                <option value="">Choose a doctor...</option>
+            </select>
+        </div>
+  
+                <div class="space-y-2">
+                  <label class="block text-gray-700 font-medium">Date</label>
+                  <input
+                    type="date"
+                    id="appointmentDate"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-gray-700 font-medium">Time</label>
+                  <input
+                    type="time"
+                    id="appointmentTime"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    required
+                  />
+        </div>
+  
+                <div class="space-y-2">
+                  <label class="block text-gray-700 font-medium">Notes</label>
+                  <textarea
+                    id="appointmentNotes"
+                    rows="3"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Any additional notes for the doctor..."
+                  ></textarea>
+        </div>
+  
+                <div class="space-y-2 md:col-span-2">
+                  <label class="block text-gray-700 font-medium"
+                    >Attachments</label
+                  >
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                      id="dropZone"
+                    >
+                      <input
+                        type="file"
+                        id="fileInput"
+                        multiple
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        class="hidden"
+                      />
+                      <i
+                        class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"
+                      ></i>
+                      <p class="text-gray-600">
+                        Drag & drop files here or click to browse
+                      </p>
+                      <p class="text-sm text-gray-500 mt-2">
+                        Supported formats: PDF, Word, Images (max 10MB each)
+                      </p>
+                    </div>
+                    <div id="fileList" class="space-y-2"></div>
+                  </div>
+                </div>
+        </div>
+  
+              <div class="flex justify-end pt-4">
+                <button
+                  type="submit"
+                  class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                  <i class="fas fa-calendar-plus"></i>
+            Book Appointment
+        </button>
+              </div>
+    </form>
+  
+            <div class="mt-8" style="display: none">
+        <h3 class="text-xl font-bold mb-4">Your Appointments</h3>
+        <div id="appointmentsList" class="space-y-4">
+            <!-- Appointments will be listed here -->
+        </div>
+    </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Move all scripts to the end of body -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="patientscript.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (!sessionStorage.getItem("token")) {
+          window.location.href = "/index.html";
+          return;
+        }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("appointmentDate").min = today;
+
+        try {
+          // Load doctors first
+          await loadAppointmentDoctors();
+
+          // Then load other data
+          await Promise.all([loadPatientInfo(), loadAppointments()]);
+        } catch (error) {
+          console.error("Error initializing page:", error);
+        }
+      });
+
+      // Load doctors into the appointment doctor select
+      async function loadAppointmentDoctors() {
+        try {
+          const response = await fetch("/api/doctors", {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          });
+
+          if (!response.ok) throw new Error("Failed to fetch doctors");
+
+          const doctors = await response.json();
+          const doctorSelect = document.getElementById(
+            "appointmentDoctorSelect"
+          );
+
+          if (!doctorSelect) {
+            console.error("Doctor select element not found");
+            return;
+          }
+
+          // Clear existing options
+          doctorSelect.innerHTML =
+            '<option value="">Choose a doctor...</option>';
+
+          // Add new options
+          doctors.forEach((doctor) => {
+            const option = document.createElement("option");
+            option.value = doctor._id;
+            option.textContent = `Dr. ${doctor.name} (${doctor.specialization})`;
+            doctorSelect.appendChild(option);
+          });
+
+          console.log(`Loaded ${doctors.length} doctors`);
+        } catch (error) {
+          console.error("Error loading doctors:", error);
+          alert("Failed to load available doctors. Please refresh the page.");
+        }
+      }
+
+      // Initialize file upload functionality
+      function initializeFileUpload() {
+        const dropZone = document.getElementById("dropZone");
+        const fileInput = document.getElementById("fileInput");
+        const fileList = document.getElementById("fileList");
+
+        // Trigger file input when clicking on drop zone
+        dropZone.addEventListener("click", () => fileInput.click());
+
+        // Handle file selection
+        fileInput.addEventListener("change", () => {
+          handleFiles(fileInput.files);
+        });
+
+        // Prevent default drag behaviors
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, preventDefaults, false);
+          document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight drop zone when dragging over it
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener("drop", handleDrop, false);
+      }
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      function highlight(e) {
+        document.getElementById("dropZone").classList.add("border-blue-500");
+      }
+
+      function unhighlight(e) {
+        document.getElementById("dropZone").classList.remove("border-blue-500");
+      }
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      }
+
+      function handleFiles(files) {
+        const fileList = document.getElementById("fileList");
+        fileList.innerHTML = "";
+
+        Array.from(files).forEach((file) => {
+          if (file.size > 10 * 1024 * 1024) {
+            // 10MB limit
+            alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+        return;
+    }
+
+          const fileDiv = document.createElement("div");
+          fileDiv.className =
+            "flex items-center justify-between p-2 bg-gray-50 rounded";
+          fileDiv.innerHTML = `
+            <div class="flex items-center gap-2">
+              <i class="fas fa-file text-blue-500"></i>
+              <span class="text-sm text-gray-600">${file.name}</span>
+            </div>
+            <span class="text-sm text-gray-500">${(file.size / 1024).toFixed(
+              1
+            )} KB</span>
+          `;
+          fileList.appendChild(fileDiv);
+        });
+      }
+   </script>
+</body>
+</html>

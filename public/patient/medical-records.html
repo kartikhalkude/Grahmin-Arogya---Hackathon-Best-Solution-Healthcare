@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Records - Synapse</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur", // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="patient.css" />
+    <style>
+      .record-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+      }
+
+      .record-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .critical-alert {
+        border-left: 4px solid #ef4444;
+      }
+
+      .warning-alert {
+        border-left: 4px solid #f59e0b;
+      }
+
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+      }
+
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -2rem;
+        top: 0.5rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: #3b82f6;
+        border: 2px solid white;
+      }
+
+      .critical-item::before {
+        background: #ef4444;
+      }
+
+      .warning-item::before {
+        background: #f59e0b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span> &nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="../patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="./pbookap.html" class="nav-link" id="appointments-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="./ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+          <a href="./scheme.html" id="view-schemes-link" class="nav-link">
+            <i class="fas fa-hand-holding-medical"></i>
+            <span>Health Schemes</span>
+          </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link"
+          >
+            <i class="fas fa-heartbeat"></i>
+            <span>Health Monitor</span>
+          </a>
+          <a
+            href="./medical-records.html"
+            id="medical-records-link"
+            class="nav-link active"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div
+              style="
+                background: linear-gradient(
+                  135deg,
+                  #06b6d4 0%,
+                  #0284c7 50%,
+                  #0369a1 100%
+                );
+                border-radius: 0.5rem;
+                padding: 30px;
+                color: white;
+                margin-bottom: 2rem;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
+              <h1
+                style="
+                  font-size: 1.875rem;
+                  font-weight: bold;
+                  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                "
+              >
+                <span style="color: #ffffff">Medical Records</span>
+                <span id="welcomeName" style="color: #a5f3fc"></span>
+              </h1>
+            </div>
+
+            <!-- Critical Alerts Section -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold mb-4">Critical Health Alerts</h2>
+              <div id="criticalAlerts" class="timeline">
+                <!-- Critical alerts will be populated here -->
+              </div>
+            </div>
+
+            <!-- Health Data History -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold mb-4">Health Data History</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="record-card">
+                  <h3 class="font-semibold text-lg mb-2">Heart Rate History</h3>
+                  <div id="heartRateHistory"></div>
+                </div>
+                <div class="record-card">
+                  <h3 class="font-semibold text-lg mb-2">
+                    Blood Oxygen History
+                  </h3>
+                  <div id="spo2History"></div>
+                </div>
+                <div class="record-card">
+                  <h3 class="font-semibold text-lg mb-2">
+                    Temperature History
+                  </h3>
+                  <div id="temperatureHistory"></div>
+                </div>
+                <div class="record-card">
+                  <h3 class="font-semibold text-lg mb-2">Steps History</h3>
+                  <div id="stepsHistory"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="flex justify-end gap-4">
+              <button
+                onclick="exportToPDF()"
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+              >
+                <i class="fas fa-file-pdf"></i>
+                Export as PDF
+              </button>
+              <button
+                onclick="exportToCSV()"
+                class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
+              >
+                <i class="fas fa-file-csv"></i>
+                Export as CSV
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // Initialize Supabase client properly
+      const supabaseClient = supabase.createClient(
+        "https://vnyygeccunmwcpjqnyjt.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZueXlnZWNjdW5td2NwanFueWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjQ0MTcsImV4cCI6MjA1NTc0MDQxN30.wZKQGKDtmu4eB66RThoelIyGDMxfvCinfDvDDd1EVyc"
+      );
+
+      async function loadMedicalRecords() {
+        try {
+          // Add loading state
+          document.getElementById("criticalAlerts").innerHTML =
+            '<div class="p-4 text-blue-600 bg-blue-50 rounded-lg">Loading medical records...</div>';
+
+          // Fetch health data from MongoDB
+          const response = await fetch("/api/health-data", {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          });
+
+          // Log the response status
+          console.log("API Response Status:", response.status);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const mongoResponse = await response.json();
+
+          // Log the response data
+          console.log("MongoDB Response:", mongoResponse);
+
+          if (!mongoResponse) {
+            throw new Error("Failed to fetch MongoDB data");
+          }
+
+          const { latestRecords, criticalRecords } = mongoResponse;
+
+          // Log the extracted data
+          console.log("Latest Records:", latestRecords?.length || 0);
+          console.log("Critical Records:", criticalRecords?.length || 0);
+
+          // Process and display critical alerts
+          displayCriticalAlerts(criticalRecords);
+          displayHealthHistory(latestRecords);
+
+          // Set up real-time updates using Socket.IO
+          console.log("Setting up Socket.IO connection...");
+          const socket = io();
+
+          socket.on("connect", () => {
+            console.log("Socket.IO connected successfully");
+          });
+
+          socket.on("connect_error", (error) => {
+            console.error("Socket.IO connection error:", error);
+          });
+
+          socket.on("sensorData", (newData) => {
+            console.log("Received new sensor data:", newData);
+            // Update displays with new data
+            if (
+              newData.alerts &&
+              newData.alerts.some((alert) => alert.type === "CRITICAL")
+            ) {
+              displayCriticalAlerts([newData, ...criticalRecords]);
+            }
+            displayHealthHistory([newData, ...latestRecords.slice(0, 9)]);
+          });
+        } catch (error) {
+          console.error("Error loading medical records:", error);
+          document.getElementById(
+            "criticalAlerts"
+          ).innerHTML = `<div class="p-4 text-red-600 bg-red-50 rounded-lg">
+              Error loading medical records: ${error.message}
+              <br>Please try refreshing the page.
+            </div>`;
+        }
+      }
+
+      function displayCriticalAlerts(alerts) {
+        const container = document.getElementById("criticalAlerts");
+        if (!alerts || alerts.length === 0) {
+          container.innerHTML =
+            '<div class="p-4 text-gray-600 bg-gray-50 rounded-lg">No critical alerts found</div>';
+          return;
+        }
+
+        container.innerHTML = alerts
+          .map((record) => {
+            const criticalAlerts = record.alerts || [];
+            return criticalAlerts
+              .filter((alert) => alert.type === "CRITICAL")
+              .map(
+                (alert) => `
+            <div class="timeline-item critical-item">
+              <div class="record-card critical-alert">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-semibold text-red-600">${
+                      alert.message || "Critical Alert"
+                    }</h4>
+                    <p class="text-sm text-gray-600">
+                      Value: ${
+                        record.heart_rate || record.spo2 || record.temperature
+                      } 
+                      ${record.heart_rate ? "BPM" : record.spo2 ? "%" : "°C"}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      Threshold: ${alert.threshold || "N/A"}
+                    </p>
+                  </div>
+                  <span class="text-sm text-gray-500">
+                    ${new Date(record.timestamp).toLocaleString()}
+                  </span>
+                </div>
+                <div class="mt-2 text-sm text-gray-600">
+                  Other vitals at the time:
+                  <ul class="mt-1 space-y-1">
+                    <li>Heart Rate: ${record.heart_rate || "N/A"} BPM</li>
+                    <li>SpO2: ${record.spo2 || "N/A"}%</li>
+                    <li>Temperature: ${record.temperature || "N/A"}°C</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `
+              )
+              .join("");
+          })
+          .join("");
+      }
+
+      function displayHealthHistory(data) {
+        if (!data || data.length === 0) {
+          ["heartRate", "spo2", "temperature", "steps"].forEach((metric) => {
+            const container = document.getElementById(`${metric}History`);
+            container.innerHTML =
+              '<div class="p-4 text-gray-600 bg-gray-50 rounded-lg">No data available</div>';
+          });
+          return;
+        }
+
+        // Display latest 10 records for each metric
+        const latestRecords = data.slice(0, 10);
+
+        const metricMappings = {
+          heartRate: "heart_rate",
+          spo2: "spo2",
+          temperature: "temperature",
+          steps: "steps",
+        };
+
+        Object.entries(metricMappings).forEach(([displayName, dbName]) => {
+          const container = document.getElementById(`${displayName}History`);
+          container.innerHTML = `
+            <div class="space-y-2">
+              ${latestRecords
+                .map(
+                  (record) => `
+                <div class="flex justify-between items-center text-sm">
+                  <span>${new Date(
+                    record.timestamp
+                  ).toLocaleTimeString()}</span>
+                  <span class="font-medium ${getValueColorClass(
+                    displayName,
+                    record[dbName]
+                  )}">
+                    ${record[dbName] || "N/A"} 
+                    ${
+                      displayName === "heartRate"
+                        ? "BPM"
+                        : displayName === "spo2"
+                        ? "%"
+                        : displayName === "temperature"
+                        ? "°C"
+                        : "steps"
+                    }
+                  </span>
+                </div>
+              `
+                )
+                .join("")}
+            </div>
+          `;
+        });
+      }
+
+      function getValueColorClass(metric, value) {
+        if (!value) return "";
+
+        const thresholds = {
+          heartRate: {
+            critical_low: 70,
+            low: 80,
+            high: 120,
+            critical_high: 130,
+          },
+          spo2: { critical_low: 90, low: 93, high: 100, critical_high: 100 },
+          temperature: {
+            critical_low: 35,
+            low: 36.5,
+            high: 37.5,
+            critical_high: 39,
+          },
+        };
+
+        const t = thresholds[metric];
+        if (!t) return "";
+
+        if (value <= t.critical_low || value >= t.critical_high)
+          return "text-red-600";
+        if (value <= t.low || value >= t.high) return "text-yellow-600";
+        return "text-green-600";
+      }
+
+      function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Add content to PDF
+        doc.setFontSize(20);
+        doc.text("Medical Records Report", 20, 20);
+
+        // Add timestamp
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 30);
+
+        // Get the critical alerts content
+        const alertsContent =
+          document.getElementById("criticalAlerts").innerText;
+
+        // Add alerts to PDF with word wrap
+        doc.setFontSize(14);
+        doc.text("Critical Alerts:", 20, 50);
+        const splitAlerts = doc.splitTextToSize(alertsContent, 170);
+        doc.setFontSize(12);
+        doc.text(splitAlerts, 20, 60);
+
+        // Save the PDF
+        doc.save(`medical-records-${new Date().toISOString()}.pdf`);
+      }
+
+      function exportToCSV() {
+        // Get all health data
+        const healthData = Array.from(
+          document.querySelectorAll(".record-card")
+        ).map((card) => {
+          const title = card.querySelector("h3").innerText;
+          const values = Array.from(card.querySelectorAll(".text-sm")).map(
+            (item) => item.innerText
+          );
+          return { title, values };
+        });
+
+        // Create CSV content
+        let csv = "Title,Time,Value\n";
+        healthData.forEach(({ title, values }) => {
+          values.forEach((value) => {
+            const [time, measurement] = value.split(",");
+            csv += `${title},${time},${measurement}\n`;
+          });
+        });
+
+        // Create and trigger download
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `medical-records-${new Date().toISOString()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+
+      // Load medical records when the page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!sessionStorage.getItem("token")) {
+          window.location.href = "/index.html";
+          return;
+        }
+        loadMedicalRecords();
+      });
+
+      function logout() {
+        sessionStorage.removeItem("token");
+        window.location.href = "/index.html";
+      }
+    </script>
+  </body>
+</html>

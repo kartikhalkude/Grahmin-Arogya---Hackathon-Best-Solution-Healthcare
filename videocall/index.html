@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal</title>
+    <style>
+        /* Modern CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --danger-color: #dc2626;
+            --success-color: #16a34a;
+            --background-dark: #0f172a;
+            --text-light: #f8fafc;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main container */
+        .app-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        /* Header section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Video grid container */
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            height: 100%;
+            max-height: calc(100vh - 180px);
+            padding: 1rem;
+        }
+
+        /* Video wrapper */
+        .video-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            aspect-ratio: 16/9;
+        }
+
+        .video-wrapper h3 {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        /* Video element */
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--background-dark);
+        }
+
+        /* Controls container */
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+
+        /* Button styles */
+        button {
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        #startCall {
+            background: var(--primary-color);
+        }
+
+        #startCall:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        #startCall:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #endCall {
+            background: var(--danger-color);
+            display: none;
+        }
+
+        #endCall:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
+
+        /* Status indicator */
+       
+        /* Loading indicator */
+      
+      
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* Connection quality indicator */
+        .connection-quality {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .quality-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .video-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                bottom: 1rem;
+            }
+
+            button {
+                min-width: 200px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Patient Video Consultation</h1>
+            <p class="status" id="callStatus"></p>
+        </div>
+
+        <div class="video-container">
+            <div class="video-wrapper">
+                <h3>Your Video</h3>
+                <video id="localVideo" autoplay playsinline muted></video>
+                <div class="loading">Initializing camera...</div>
+                <div class="connection-quality">
+                    <div class="quality-indicator"></div>
+                    <span>Good Connection</span>
+                </div>
+            </div>
+            <div class="video-wrapper">
+                <h3>Doctor's Video</h3>
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div class="loading">Waiting for doctor to join...</div>
+                <div class="connection-quality">
+                    <div class="quality-indicator"></div>
+                    <span>Good Connection</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startCall">Start Call</button>
+            <button id="endCall">End Call</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Initialize Socket.io connection
+        const socket = io();
+        let localStream;
+        let peerConnection;
+        
+        // WebRTC configuration with STUN server
+        const configuration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' }
+            ]
+        };
+
+        // Event listeners for call control buttons
+        document.getElementById('startCall').addEventListener('click', startCall);
+        document.getElementById('endCall').addEventListener('click', endCall);
+
+        // Function to start a video call
+        async function startCall() {
+            try {
+                // Get user's video and audio streams
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+                
+                // Emit call request to server
+                socket.emit('patient-request-call', { type: 'patient-call' });
+                
+                // Update UI
+                document.getElementById('callStatus').textContent = 'Waiting for doctor to accept...';
+                document.getElementById('startCall').disabled = true;
+            } catch (err) {
+                console.error('Error accessing media devices:', err);
+                document.getElementById('callStatus').textContent = 'Failed to access camera/microphone';
+            }
+        }
+
+        // Function to end the call
+        function endCall() {
+            // Stop all tracks in the local stream
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Close peer connection
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+
+            // Reset video elements
+            document.getElementById('localVideo').srcObject = null;
+            document.getElementById('remoteVideo').srcObject = null;
+
+            // Update UI
+            document.getElementById('startCall').disabled = false;
+            document.getElementById('endCall').style.display = 'none';
+            document.getElementById('callStatus').textContent = 'Call ended';
+
+            // Notify server
+            socket.emit('call-ended');
+        }
+
+        // Handle call accepted event
+        socket.on('call-accepted', async () => {
+            document.getElementById('callStatus').textContent = 'Call connected!';
+            document.getElementById('endCall').style.display = 'inline';
+            createPeerConnection();
+            
+            // Create and send offer
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('offer', offer);
+        });
+
+        // Handle incoming answer
+        socket.on('answer', async (answer) => {
+            await peerConnection.setRemoteDescription(answer);
+        });
+
+        // Handle incoming ICE candidates
+        socket.on('ice-candidate', async (candidate) => {
+            if (peerConnection) {
+                await peerConnection.addIceCandidate(candidate);
+            }
+        });
+
+        // Handle call ended by doctor
+        socket.on('call-ended', endCall);
+
+        // Function to create and set up WebRTC peer connection
+        function createPeerConnection() {
+            peerConnection = new RTCPeerConnection(configuration);
+            
+            // Add local tracks to peer connection
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // Handle incoming streams
+            peerConnection.ontrack = event => {
+                document.getElementById('remoteVideo').srcObject = event.streams[0];
+            };
+
+            // Handle and send ICE candidates
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('ice-candidate', event.candidate);
+                }
+            };
+        }
+        socket.on('call-declined', () => {
+    // Reset UI elements
+    document.getElementById('startCall').disabled = false;
+    document.getElementById('endCall').style.display = 'none';
+    
+    // Update status with decline message
+    document.getElementById('callStatus').textContent = 'Call declined by doctor';
+    
+    // Optional: Add a visual alert or notification
+    alert('Doctor declined the call');
+});
+    </script>
+</body>
+</html>

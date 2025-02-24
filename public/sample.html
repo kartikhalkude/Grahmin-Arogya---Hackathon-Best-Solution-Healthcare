@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto">
+            <h1 class="text-white text-2xl font-bold">Patient Portal</h1>
+            <span id="patientName" class="text-white"></span>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <!-- Appointment Booking Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-bold mb-4">Book Appointment</h2>
+            <form id="appointmentForm" class="space-y-4">
+                <div>
+                    <label class="block mb-2">Select Doctor:</label>
+                    <select id="doctorSelect" class="w-full p-2 border rounded" required></select>
+                </div>
+                <div>
+                    <label class="block mb-2">Date:</label>
+                    <input type="date" id="appointmentDate" class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Time:</label>
+                    <input type="time" id="appointmentTime" class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Notes:</label>
+                    <textarea id="appointmentNotes" class="w-full p-2 border rounded" rows="3"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Book Appointment
+                </button>
+            </form>
+        </div>
+
+        <!-- Prescription Creation Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">Create AI Prescription</h2>
+            <form id="prescriptionForm" class="space-y-4">
+                <div>
+                    <label class="block mb-2">Symptoms:</label>
+                    <textarea id="symptoms" class="w-full p-2 border rounded" rows="3" required></textarea>
+                </div>
+                <div>
+                    <label class="block mb-2">Duration:</label>
+                    <input type="text" id="duration" class="w-full p-2 border rounded" placeholder="e.g., 3 days" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Severity (1-10):</label>
+                    <input type="number" id="severity" min="1" max="10" class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-2">Select Doctor:</label>
+                    <select id="prescriptionDoctorSelect" class="w-full p-2 border rounded" required></select>
+                </div>
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Generate & Send Prescription
+                </button>
+            </form>
+        </div>
+
+        <!-- Appointments List -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">My Appointments</h2>
+            <div id="appointmentsList" class="space-y-4"></div>
+        </div>
+
+        <!-- Prescriptions List -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">My Prescriptions</h2>
+            <div id="prescriptionsList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // Check for authentication
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        // Fetch patient info
+        async function fetchPatientInfo() {
+            try {
+                const response = await fetch('/api/patient/info', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('patientName').textContent = `Welcome, ${data.name}`;
+            } catch (error) {
+                console.error('Error fetching patient info:', error);
+            }
+        }
+
+        // Fetch doctors list
+        async function fetchDoctors() {
+            try {
+                const response = await fetch('/api/doctors', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const doctors = await response.json();
+                const doctorSelects = ['doctorSelect', 'prescriptionDoctorSelect'];
+                
+                doctorSelects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">Select a doctor</option>';
+                    doctors.forEach(doctor => {
+                        const option = document.createElement('option');
+                        option.value = doctor._id;
+                        option.textContent = `Dr. ${doctor.name} - ${doctor.specialization}`;
+                        select.appendChild(option);
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching doctors:', error);
+            }
+        }
+
+        // Generate AI Diagnosis (Mock function - replace with actual AI integration)
+        function generateAIDiagnosis(symptoms, duration, severity) {
+            // This is a mock function - replace with actual AI integration
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const diagnoses = [
+                        "Common cold with mild respiratory infection",
+                        "Seasonal allergies with sinus congestion",
+                        "Mild viral infection",
+                        "Upper respiratory tract infection",
+                        "Gastroenteritis"
+                    ];
+                    resolve(diagnoses[Math.floor(Math.random() * diagnoses.length)]);
+                }, 1000);
+            });
+        }
+
+        // Handle appointment form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('/api/appointments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        doctorId: document.getElementById('doctorSelect').value,
+                        date: document.getElementById('appointmentDate').value,
+                        time: document.getElementById('appointmentTime').value,
+                        notes: document.getElementById('appointmentNotes').value
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Appointment booked successfully!');
+                    document.getElementById('appointmentForm').reset();
+                    fetchAppointments();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to book appointment');
+                }
+            } catch (error) {
+                console.error('Error booking appointment:', error);
+                alert('Failed to book appointment');
+            }
+        });
+
+        // Handle prescription form submission
+        document.getElementById('prescriptionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const symptoms = document.getElementById('symptoms').value;
+            const duration = document.getElementById('duration').value;
+            const severity = document.getElementById('severity').value;
+            const doctorId = document.getElementById('prescriptionDoctorSelect').value;
+
+            try {
+                // Generate AI Diagnosis
+                const aiDiagnosis = await generateAIDiagnosis(symptoms, duration, severity);
+
+                // Create prescription
+                const response = await fetch('/api/prescriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        symptoms,
+                        duration,
+                        severity: parseInt(severity),
+                        aiDiagnosis,
+                        doctorId
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Prescription created and sent to doctor!');
+                    document.getElementById('prescriptionForm').reset();
+                    fetchPrescriptions();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to create prescription');
+                }
+            } catch (error) {
+                console.error('Error creating prescription:', error);
+                alert('Failed to create prescription');
+            }
+        });
+
+        // Fetch and display appointments
+        async function fetchAppointments() {
+            try {
+                const response = await fetch('/api/patient/appointments', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const appointments = await response.json();
+                
+                const appointmentsList = document.getElementById('appointmentsList');
+                appointmentsList.innerHTML = appointments.map(appointment => `
+                    <div class="border p-4 rounded ${getStatusColor(appointment.status)}">
+                        <p class="font-bold">Doctor: ${appointment.doctor.name}</p>
+                        <p>Date: ${new Date(appointment.date).toLocaleDateString()}</p>
+                        <p>Time: ${appointment.time}</p>
+                        <p>Status: ${appointment.status}</p>
+                        ${appointment.notes ? `<p>Notes: ${appointment.notes}</p>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching appointments:', error);
+            }
+        }
+
+        // Fetch and display prescriptions
+        async function fetchPrescriptions() {
+            try {
+                const response = await fetch('/api/prescriptions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const prescriptions = await response.json();
+                
+                const prescriptionsList = document.getElementById('prescriptionsList');
+                prescriptionsList.innerHTML = prescriptions.map(prescription => `
+                    <div class="border p-4 rounded ${getPrescriptionStatusColor(prescription.status)}">
+                        <p class="font-bold">Doctor: ${prescription.doctorId.name}</p>
+                        <p>Symptoms: ${prescription.symptoms}</p>
+                        <p>AI Diagnosis: ${prescription.aiDiagnosis}</p>
+                        <p>Status: ${prescription.status}</p>
+                        ${prescription.medications ? `
+                            <div class="mt-2">
+                                <p class="font-bold">Medications:</p>
+                                ${prescription.medications.map(med => `
+                                    <p>${med.name} - ${med.dosage} - ${med.frequency}</p>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        ${prescription.doctorNotes ? `
+                            <p class="mt-2"><strong>Doctor's Notes:</strong> ${prescription.doctorNotes}</p>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching prescriptions:', error);
+            }
+        }
+
+        // Utility functions for status colors
+        function getStatusColor(status) {
+            switch (status) {
+                case 'scheduled': return 'bg-blue-50';
+                case 'completed': return 'bg-green-50';
+                case 'cancelled': return 'bg-red-50';
+                default: return 'bg-gray-50';
+            }
+        }
+
+        function getPrescriptionStatusColor(status) {
+            switch (status) {
+                case 'pending': return 'bg-yellow-50';
+                case 'approved': return 'bg-green-50';
+                case 'rejected': return 'bg-red-50';
+                default: return 'bg-gray-50';
+            }
+        }
+
+        // Initialize page
+        fetchPatientInfo();
+        fetchDoctors();
+        fetchAppointments();
+        fetchPrescriptions();
+    </script>
+</body>
+</html>

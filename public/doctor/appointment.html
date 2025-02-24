@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Appointments - Synapse</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="doctor.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-logo">
+          <svg
+            class="w-8 h-8"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Clean Medical Cross -->
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="#dc2626"
+              class="text-red-600"
+            />
+            <path
+              d="M12 8v8M8 12h8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span> &nbsp;ग्रामीण-आरोग्य</span>
+        </div>
+
+        <div class="header-actions">
+          <span id="doctorName" class="text-gray-700 font-medium"></span>
+          <button onclick="logout()" class="flex items-center gap-2">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="../doctor.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="prescription.html" class="nav-link" id="prescriptions-link">
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a href="appointment.html" class="nav-link" id="appointments-link">
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <!-- Welcome Section -->
+          <div class="welcome-section mb-8">
+            <h1 class="text-3xl font-bold">Manage Appointments</h1>
+            <p class="mt-2 opacity-90">
+              View and manage your patient appointments
+            </p>
+          </div>
+
+          <!-- Filters Section -->
+          <div class="card mb-6">
+            <div class="flex flex-wrap gap-4">
+              <select id="statusFilter" class="form-input">
+                <option value="all">All Status</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+
+              <input type="date" id="dateFilter" class="form-input" />
+
+              <button onclick="resetFilters()" class="btn btn-primary">
+                Reset Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Appointments List -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Appointments</h2>
+            </div>
+            <div id="appointmentsList" class="space-y-4"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Appointment Details Modal -->
+    <div id="appointmentModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">
+            Appointment Details
+          </h3>
+          <button
+            onclick="closeAppointmentModal()"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="appointmentDetails" class="space-y-4"></div>
+        <div class="flex justify-end space-x-4 mt-6">
+          <button
+            id="completeAppointmentBtn"
+            onclick="updateAppointmentStatus('completed')"
+            class="btn btn-primary"
+          >
+            Mark as Completed
+          </button>
+          <button
+            id="cancelAppointmentBtn"
+            onclick="updateAppointmentStatus('cancelled')"
+            class="btn btn-danger"
+          >
+            Cancel Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="doctor.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+        if (currentPath.includes("doctor.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        } else if (currentPath.includes("appointment.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        }
+      });
+    </script>
+  </body>
+</html>

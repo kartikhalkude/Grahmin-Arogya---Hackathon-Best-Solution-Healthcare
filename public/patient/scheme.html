@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Government Health Schemes - Synapse</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,hi,mr,bn,te,ta,gu,kn,ml,pa,ur", // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="patient.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- Logo -->
+      <div class="header-logo">
+        <svg
+          class="w-8 h-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Clean Medical Cross -->
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            fill="#dc2626"
+            class="text-red-600"
+          />
+          <path
+            d="M12 8v8M8 12h8"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span> &nbsp;ग्रामीण-आरोग्य</span>
+      </div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-actions">
+            <!-- Add Google Translate Element -->
+            <div id="google_translate_element"></div>
+            <button onclick="logout()" class="flex items-center gap-2">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="../patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="./pbookap.html" class="nav-link" id="appointments-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="./ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a
+            href="./prescription.html"
+            class="nav-link"
+            id="prescriptions-link"
+          >
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a
+            href="./appointment.html"
+            class="nav-link"
+            id="view-appointments-link"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+          <a
+            href="./scheme.html"
+            id="view-schemes-link"
+            class="nav-link active"
+          >
+            <i class="fas fa-hand-holding-medical"></i>
+            <span>Health Schemes</span>
+          </a>
+          <a
+            href="./health-monitor.html"
+            id="health-monitor-link"
+            class="nav-link"
+          >
+            <i class="fas fa-heartbeat"></i>
+            <span>Health Monitor</span>
+          </a>
+          <a
+            href="medical-records.html"
+            id="medical-records-link"
+            class="nav-link"
+          >
+            <i class="fas fa-notes-medical"></i>
+            <span>Medical Records</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="content-container">
+          <!-- Government Schemes Section -->
+          <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div
+              style="
+                background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+                border-radius: 0.5rem;
+                padding: 30px;
+                color: white;
+                margin-bottom: 2rem;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+              "
+            >
+              <h1 style="font-size: 1.875rem; font-weight: bold">
+                <span style="color: #eee7bc">Government Health Schemes</span>
+                <span id="welcomeName" style="color: #00e676"></span>
+              </h1>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- Ayushman Bharat -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Ayushman Bharat
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Provides health coverage up to ₹5 lakhs per family per year
+                  for secondary and tertiary care hospitalization.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>Covers pre and post hospitalization expenses</li>
+                  <li>No restriction on family size</li>
+                  <li>All pre-existing conditions covered from day one</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('ayushman')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- CGHS -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  CGHS (Central Government Health Scheme)
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Comprehensive health care facility for Central Government
+                  employees and pensioners.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>OPD and Indoor treatment coverage</li>
+                  <li>Includes family members</li>
+                  <li>Access to CGHS wellness centers</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('cghs')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- Rastriya Arogya Nidhi -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Rastriya Arogya Nidhi
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Financial assistance for treatment of major life-threatening
+                  diseases for patients living below poverty line.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>Cancer treatment support up to ₹2 lakhs</li>
+                  <li>Treatment at government hospitals</li>
+                  <li>Direct financial assistance to hospitals</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('ran')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- Janani Shishu Suraksha Karyakram -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Janani Shishu Suraksha Karyakram
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Free and cashless services to pregnant women and sick
+                  newborns.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>Free delivery and C-section</li>
+                  <li>Free drugs and consumables</li>
+                  <li>Free diagnostics and transport</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('jssk')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- HRD Health Research Fellowship -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Long Term Fellowship (HRD)
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Fellowship program for health research and development in
+                  medical sciences.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>Research funding support</li>
+                  <li>Monthly stipend</li>
+                  <li>Academic development opportunities</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('hrd')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- Health Minister's Discretionary Grant -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Health Minister's Discretionary Grant
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Financial assistance for patients with rare diseases and
+                  critical illnesses.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>Case-by-case financial support</li>
+                  <li>Coverage for rare diseases</li>
+                  <li>Emergency medical support</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('hmdg')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+
+              <!-- Nikshay Poshan Yojana -->
+              <div
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">
+                  Nikshay Poshan Yojana
+                </h3>
+                <p class="text-gray-600 mb-3">
+                  Nutritional support for TB patients through Direct Benefit
+                  Transfer.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                  <li>₹500 per month nutritional support</li>
+                  <li>Direct bank transfer</li>
+                  <li>Support throughout treatment duration</li>
+                </ul>
+                <button
+                  onclick="checkEligibility('npy')"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  Check Eligibility →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Eligibility Calculator -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-semibold mb-6">Eligibility Calculator</h2>
+            <form id="eligibilityForm" class="space-y-6">
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-gray-700 mb-2">Annual Income</label>
+                  <input
+                    type="number"
+                    id="income"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter annual income"
+                  />
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2"
+                    >Employment Type</label
+                  >
+                  <select
+                    id="employmentType"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">Select employment type</option>
+                    <option value="government">Government Employee</option>
+                    <option value="private">Private Sector</option>
+                    <option value="self-employed">Self Employed</option>
+                    <option value="unemployed">Unemployed</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2">Age</label>
+                  <input
+                    type="number"
+                    id="age"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter your age"
+                  />
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2">Location</label>
+                  <select
+                    id="location"
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">Select your state</option>
+                    <option value="urban">Urban</option>
+                    <option value="rural">Rural</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex justify-center">
+                <button
+                  type="submit"
+                  class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Calculate Eligibility
+                </button>
+              </div>
+            </form>
+
+            <!-- Results Section -->
+            <div id="eligibilityResults" class="mt-6 hidden">
+              <h3 class="text-xl font-semibold mb-4">
+                Your Eligibility Results
+              </h3>
+              <div id="resultsContent" class="space-y-4">
+                <!-- Results will be populated here via JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Function to check eligibility for specific schemes
+      function checkEligibility(scheme) {
+        document
+          .getElementById("eligibilityForm")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Add scheme URLs
+      const schemeUrls = {
+        "Ayushman Bharat": "https://pmjay.gov.in/",
+        CGHS: "https://cghs.gov.in/",
+        "Rastriya Arogya Nidhi":
+          "https://main.mohfw.gov.in/Organisation/Departments-of-Health-and-Family-Welfare/rashtriya-arogya-nidhi-ran",
+        "Janani Shishu Suraksha Karyakram":
+          "https://nhm.gov.in/index1.php?lang=1&level=3&sublinkid=842&lid=308",
+        "Long Term Fellowship (HRD)":
+          "https://main.icmr.nic.in/career-opportunity",
+        "Nikshay Poshan Yojana": "https://nikshay.in/Home/TbSchemes",
+      };
+
+      // Handle form submission
+      document
+        .getElementById("eligibilityForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const income = parseInt(document.getElementById("income").value);
+          const employmentType =
+            document.getElementById("employmentType").value;
+          const age = parseInt(document.getElementById("age").value);
+          const location = document.getElementById("location").value;
+
+          // Show results section
+          const resultsDiv = document.getElementById("eligibilityResults");
+          const resultsContent = document.getElementById("resultsContent");
+          resultsDiv.classList.remove("hidden");
+
+          let eligibleSchemes = [];
+
+          // Existing eligibility checks
+          if (income < 250000 && location === "rural") {
+            eligibleSchemes.push({
+              name: "Ayushman Bharat",
+              details: "You are eligible for coverage up to ₹5 lakhs per year",
+            });
+          }
+
+          if (employmentType === "government") {
+            eligibleSchemes.push({
+              name: "CGHS",
+              details:
+                "You are eligible for CGHS benefits as a government employee",
+            });
+          }
+
+          if (income < 100000) {
+            eligibleSchemes.push({
+              name: "Rastriya Arogya Nidhi",
+              details:
+                "You may be eligible for financial assistance for major diseases",
+            });
+          }
+
+          if (income < 300000 && location === "rural") {
+            eligibleSchemes.push({
+              name: "Janani Shishu Suraksha Karyakram",
+              details: "Eligible for free maternal and newborn care services",
+            });
+          }
+
+          if (age >= 18 && age <= 35 && employmentType !== "unemployed") {
+            eligibleSchemes.push({
+              name: "Long Term Fellowship (HRD)",
+              details: "You may be eligible for health research fellowship",
+            });
+          }
+
+          if (income < 150000) {
+            eligibleSchemes.push({
+              name: "Nikshay Poshan Yojana",
+              details:
+                "Eligible for TB patient nutritional support if diagnosed",
+            });
+          }
+
+          // Display results with links to official pages
+          resultsContent.innerHTML =
+            eligibleSchemes.length > 0
+              ? eligibleSchemes
+                  .map(
+                    (scheme) => `
+                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
+                        <h4 class="font-semibold text-green-800">${
+                          scheme.name
+                        }</h4>
+                        <p class="text-green-700 mb-2">${scheme.details}</p>
+                        <a href="${schemeUrls[scheme.name]}" 
+                           target="_blank" 
+                           class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                            <span>Visit Official Website</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </div>
+                `
+                  )
+                  .join("")
+              : `<div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-yellow-700">Based on the provided information, you may not be eligible for these schemes. Please consult with a government representative for more options.</p>
+                    <p class="mt-2">
+                        <a href="https://www.india.gov.in/topics/health-family-welfare" 
+                           target="_blank"
+                           class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                            Browse All Health Schemes
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </p>
+                   </div>`;
+        });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        if (currentPath.includes("patient.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("pbookap.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        } else if (currentPath.includes("ai.html")) {
+          document.getElementById("ai-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        } else if (currentPath.includes("appointment.html")) {
+          document
+            .getElementById("view-appointments-link")
+            .classList.add("active");
+        } else if (currentPath.includes("scheme.html")) {
+          document.getElementById("view-schemes-link").classList.add("active");
+        } else if (currentPath.includes("health-monitor.html")) {
+          document
+            .getElementById("health-monitor-link")
+            .classList.add("active");
+        }
+      });
+    </script>
+  </body>
+</html>

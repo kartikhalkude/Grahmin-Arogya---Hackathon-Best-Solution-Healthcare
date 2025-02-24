@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prescription System - Register</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-2xl font-bold text-center mb-8">Register Account</h1>
+            
+            <form id="registerForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">Name:</label>
+                    <input type="text" id="name" required
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Email:</label>
+                    <input type="email" id="email" required
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Password:</label>
+                    <input type="password" id="password" required minlength="6"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Role:</label>
+                    <select id="role" required
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Age:</label>
+                    <input type="number" id="age" required min="1" max="120"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div id="specializationDiv" class="hidden">
+                    <label class="block text-gray-700 mb-2">Specialization:</label>
+                    <input type="text" id="specialization"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" 
+                    class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    Register
+                </button>
+            </form>
+            
+            <p class="mt-4 text-center text-gray-600">
+                Already have an account? 
+                <a href="/index.html" class="text-blue-500 hover:text-blue-600">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('role').addEventListener('change', (e) => {
+            const specializationDiv = document.getElementById('specializationDiv');
+            const specialization = document.getElementById('specialization');
+            specializationDiv.classList.toggle('hidden', e.target.value !== 'doctor');
+            specialization.required = e.target.value === 'doctor';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                age: parseInt(document.getElementById('age').value),
+                specialization: document.getElementById('specialization').value.trim()
+            };
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = '/index.html';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('An error occurred during registration');
+            }
+        });
+    </script>
+</body>
+</html>
