@@ -1,1 +1,0 @@
-# Grahmin-Arogya---Hackathon-Best-Solution-Healthcare
